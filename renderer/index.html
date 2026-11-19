@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; script-src 'self'">
+  <title>MisterCraft Launcher</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <canvas id="bg"></canvas>
+  <div class="bg-shade"></div>
+
+  <header id="titlebar">
+    <div class="brand">
+      <img src="assets/icon.png" alt="">
+      <span class="brand-name">MISTERCRAFT</span><em>LAUNCHER</em>
+    </div>
+    <div class="winbtns">
+      <button id="btn-min" title="Свернуть"><i class="ic-min"></i></button>
+      <button id="btn-max" title="Развернуть"><i class="ic-max"></i></button>
+      <button id="btn-close" class="close" title="Закрыть"><i class="ic-x"></i></button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-title">MISTER<span>CRAFT</span></div>
+      <div class="hero-sub">Лаунчер Minecraft Java Edition</div>
+      <div class="selected-card glass">
+        <div class="sc-label">ВЫБРАННАЯ ВЕРСИЯ</div>
+        <div class="sc-main"><span id="hero-ver">—</span><span id="hero-loader" class="chip-sm"></span></div>
+        <div id="hero-status" class="sc-status"></div>
+      </div>
+    </section>
+
+    <aside class="panel glass versions">
+      <div class="panel-head">Версия игры</div>
+      <div class="tabs" id="tabs">
+        <button data-tab="release" class="active">Релизы</button>
+        <button data-tab="snapshot">Снапшоты</button>
+        <button data-tab="old">Старые</button>
+      </div>
+      <input id="search" class="input" type="text" placeholder="Поиск версии…" autocomplete="off" spellcheck="false">
+      <div id="vlist" class="vlist"></div>
+      <div class="panel-head small">Модлоадер</div>
+      <div class="chips" id="loader-chips">
+        <button data-loader="vanilla" class="active">Vanilla</button>
+        <button data-loader="fabric">Fabric</button>
+        <button data-loader="forge">Forge</button>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="bar glass">
+    <button id="btn-account" class="acc-btn">
+      <canvas id="acc-avatar" width="32" height="32"></canvas>
+      <span class="acc-text"><b id="acc-name">Нет аккаунта</b><small id="acc-type">Нажмите, чтобы войти</small></span>
+    </button>
+
+    <div class="status">
+      <div class="status-row"><span id="status-text">Готов к запуску</span><span id="status-pct"></span></div>
+      <div class="bar-track"><div id="bar-fill" class="bar-fill"></div></div>
+    </div>
+
+    <button id="btn-installed" class="btn ghost">Установленные</button>
+    <button id="btn-settings" class="btn ghost">Настройки</button>
+    <button id="btn-stop" class="btn danger hidden">Остановить</button>
+    <button id="btn-play" class="btn play"><span id="play-label">ИГРАТЬ</span></button>
+  </footer>
+
+  <!-- Настройки -->
+  <div class="modal" id="m-settings"><div class="dialog glass">
+    <div class="dlg-head"><h2>Настройки</h2><button class="x" data-close>✕</button></div>
+    <div class="dlg-body">
+      <label class="field">
+        <span>Оперативная память: <b id="ram-label"></b></span>
+        <input id="ram-range" type="range" min="1024" max="8192" step="512">
+      </label>
+      <label class="field">
+        <span>Java</span>
+        <div class="row">
+          <select id="java-select" class="input"></select>
+          <button id="java-browse" class="btn ghost small">Обзор…</button>
+        </div>
+        <small class="hint">«Авто» — лаунчер сам подберёт или скачает нужную Java для выбранной версии.</small>
+      </label>
+      <label class="check"><input type="checkbox" id="chk-hide"><span>Сворачивать лаунчер при запуске игры</span></label>
+      <div class="row end">
+        <button id="btn-open-folder" class="btn ghost">Открыть папку Minecraft</button>
+      </div>
+      <small class="hint" id="root-path"></small>
+    </div>
+  </div></div>
+
+  <!-- Аккаунт -->
+  <div class="modal" id="m-account"><div class="dialog glass">
+    <div class="dlg-head"><h2>Аккаунт</h2><button class="x" data-close>✕</button></div>
+    <div class="dlg-body">
+      <div id="acc-list" class="acc-list"></div>
+
+      <div class="section-title">Вход через Microsoft</div>
+      <div id="ms-box" class="ms-box hidden">
+        <div class="ms-step">Откройте страницу Microsoft и введите код:</div>
+        <div id="ms-code" class="ms-code">—</div>
+        <div class="row">
+          <button id="ms-open" class="btn ghost small">Открыть страницу</button>
+          <button id="ms-copy" class="btn ghost small">Копировать код</button>
+          <button id="ms-cancel" class="btn danger small">Отмена</button>
+        </div>
+      </div>
+      <div class="row" id="ms-start-row">
+        <button id="btn-ms" class="btn play small">Войти через Microsoft</button>
+      </div>
+      <label class="field">
+        <span>Azure Client ID</span>
+        <input id="ms-client-id" class="input" type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" spellcheck="false">
+        <small class="hint">Нужен для входа Microsoft. Создаётся бесплатно в Azure (см. README).</small>
+      </label>
+
+      <div class="section-title">Офлайн-профиль</div>
+      <div class="row">
+        <input id="off-name" class="input" type="text" maxlength="16" placeholder="Ник (3–16 символов)" spellcheck="false">
+        <button id="btn-off-add" class="btn ghost small">Добавить</button>
+      </div>
+      <small class="hint">Для игры без лицензии доступны только одиночная игра и серверы без проверки лицензии.</small>
+    </div>
+  </div></div>
+
+  <!-- Установленные версии -->
+  <div class="modal" id="m-installed"><div class="dialog glass wide">
+    <div class="dlg-head"><h2>Установленные версии</h2><button class="x" data-close>✕</button></div>
+    <div class="dlg-body">
+      <div id="inst-list" class="inst-list"></div>
+      <div class="row end"><button id="btn-open-folder2" class="btn ghost">Открыть папку Minecraft</button></div>
+    </div>
+  </div></div>
+
+  <!-- Журнал -->
+  <div class="modal" id="m-log"><div class="dialog glass wide">
+    <div class="dlg-head"><h2>Журнал игры</h2><button class="x" data-close>✕</button></div>
+    <div class="dlg-body">
+      <pre id="log-pre" class="log"></pre>
+    </div>
+  </div></div>
+
+  <div id="toasts"></div>
+
+  <script src="background.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
